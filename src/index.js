@@ -6,10 +6,12 @@ import cors from '@koa/cors';
 import helmet from 'koa-helmet';
 import jsonutil from 'koa-json';
 import path from 'path';
-import router from './routes/routes.js'
-
+import compress from 'koa-compress';
+import router from './routes/routes.js';
 
 const app = new Koa();
+
+const isDevMode = process.env.NODE_ENV === 'development';
 
 /**
  * 使用koa-compose 集成中间件
@@ -18,10 +20,15 @@ const middleware = compose([
   // monitorLogger,
   koaBody(),
   statics(path.join(__dirname, '../public')),
-  cors(),
-  jsonutil({ pretty: false, param: 'pretty' }),
-  helmet(),
+  cors(), // 跨域
+  jsonutil({ pretty: false, param: 'pretty' }), // json格式化
+  helmet(), // http 安全
 ]);
+
+if (!isDevMode) {
+  app.use(compress());
+}
+
 app.use(middleware);
-app.use(router())
+app.use(router());
 app.listen(3000);
