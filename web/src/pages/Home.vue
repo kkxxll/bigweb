@@ -4,48 +4,63 @@
       <el-input v-model="form.username"></el-input>
     </el-form-item>
     <el-form-item label="密码" prop="password">
-      <el-input type="password" v-model="form.password" show-password></el-input>
+      <el-input
+        type="password"
+        v-model="form.password"
+        show-password
+      ></el-input>
     </el-form-item>
     <el-form-item label="验证码" prop="captcha">
-      <el-input v-model="form.captcha" style="width: 60%; margin-right: 10px;"></el-input>
+      <el-input
+        v-model="form.captcha"
+        style="width: 60%; margin-right: 10px"
+      ></el-input>
+      <div v-html="svg"></div>
       <el-button type="text" @click="generateCaptcha">获取验证码</el-button>
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="submitForm('loginForm')">登录</el-button>
+      <el-button type="primary" @click="submitForm('loginForm')"
+        >登录</el-button
+      >
       <el-button @click="resetForm('loginForm')">重置</el-button>
     </el-form-item>
   </el-form>
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   data() {
     return {
+      svg: '',
       form: {
         username: '',
         password: '',
-        captcha: ''
+        captcha: '',
       },
       rules: {
         username: [
-          { required: true, message: '请输入用户名', trigger: 'blur' }
+          { required: true, message: '请输入用户名', trigger: 'blur' },
         ],
-        password: [
-          { required: true, message: '请输入密码', trigger: 'blur' }
-        ],
-        captcha: [
-          { required: true, message: '请输入验证码', trigger: 'blur' }
-        ]
+        password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+        captcha: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
       },
-      generatedCaptcha: ''
-    }
+      generatedCaptcha: '',
+    };
+  },
+  mounted() {
+    axios.get('http://localhost:3000/getcaptcha').then((res) => {
+      console.log(res.data);
+      this.svg = res.data.svg;
+    });
   },
   methods: {
     generateCaptcha() {
-      // 这里可以调用后端接口生成验证码
-      // 为了演示，我们生成一个简单的随机数验证码
-      this.generatedCaptcha = Math.random().toString(36).substring(2, 6).toUpperCase();
-      alert('验证码: ' + this.generatedCaptcha);
+      axios.post('http://localhost:3000/forget', {
+        email: 'kkxx.ll@qq.com',
+      }).then((res) => {
+        console.log(res);
+      });
     },
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
@@ -64,9 +79,9 @@ export default {
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped>
