@@ -1,4 +1,5 @@
 import svgCaptcha from 'svg-captcha';
+import { setValue } from '../config/RedisConfig';
 class PublicController {
   constructor() {}
 
@@ -12,6 +13,7 @@ class PublicController {
       height: 40,
       fontSize: 50,
     });
+    setValue('code', newCaptcha.text, 10 * 60)
 
     ctx.body = {
       code: 200,

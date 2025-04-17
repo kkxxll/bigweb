@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer'
 
 // async..await is not allowed in global scope, must use a wrapper
-async function send (sendInfo) {
+async function send (sendInfo = {}) {
   // create reusable transporter object using the default SMTP transport
   const transporter = nodemailer.createTransport({
     host: 'smtp.qq.com',
@@ -58,6 +58,6 @@ async function send (sendInfo) {
   // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
 }
 
-send().catch(console.error)
+// send().catch(console.error)
 
 export default send

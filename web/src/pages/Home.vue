@@ -16,13 +16,13 @@
         style="width: 60%; margin-right: 10px"
       ></el-input>
       <div v-html="svg"></div>
-      <el-button type="text" @click="generateCaptcha">获取验证码</el-button>
+      <el-button type="text" @click="generateCaptcha()">获取验证码</el-button>
     </el-form-item>
     <el-form-item>
       <el-button type="primary" @click="submitForm('loginForm')"
         >登录</el-button
       >
-      <el-button @click="resetForm('loginForm')">重置</el-button>
+      <el-button @click="forget()">忘记密码</el-button>
     </el-form-item>
   </el-form>
 </template>
@@ -49,33 +49,46 @@ export default {
     };
   },
   mounted() {
-    axios.get('http://localhost:3000/getcaptcha').then((res) => {
-      console.log(res.data);
-      this.svg = res.data.svg;
-    });
+    this.generateCaptcha();
   },
   methods: {
+    forget() {
+      axios
+        .post('http://localhost:3000/login/forget', {
+          email: 'kkxx.ll@qq.com',
+        })
+        .then((res) => {
+          console.log(res);
+        });
+    },
     generateCaptcha() {
-      axios.post('http://localhost:3000/forget', {
-        email: 'kkxx.ll@qq.com',
-      }).then((res) => {
-        console.log(res);
+      axios.get('http://localhost:3000/public/getcaptcha').then((res) => {
+        this.svg = res.data.svg;
       });
     },
     submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          if (this.form.captcha.toUpperCase() === this.generatedCaptcha) {
-            alert('提交成功!');
-            // 这里可以添加登录逻辑
-          } else {
-            this.$message.error('验证码错误!');
-          }
-        } else {
-          console.log('验证失败!');
-          return false;
-        }
-      });
+      axios
+        .post('http://localhost:3000/login/login', {
+          username: 'kkxx.ll@qq.com',
+          password: '123456',
+          code: this.form.captcha
+        })
+        .then((res) => {
+          console.log(res);
+        });
+      // this.$refs[formName].validate((valid) => {
+      //   if (valid) {
+      //     if (this.form.captcha.toUpperCase() === this.generatedCaptcha) {
+      //       alert('提交成功!');
+      //       // 这里可以添加登录逻辑
+      //     } else {
+      //       this.$message.error('验证码错误!');
+      //     }
+      //   } else {
+      //     console.log('验证失败!');
+      //     return false;
+      //   }
+      // });
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();
